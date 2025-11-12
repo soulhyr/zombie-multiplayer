@@ -5,11 +5,13 @@ using UnityEngine;
 public class Woman : MonoBehaviourPun
 {
     private PhotonView view;
+    private Animator ani;
     private float speed = 1f;
 
     void Awake()
     {
         view = GetComponent<PhotonView>();
+        ani = GetComponent<Animator>();
     }
     
     void Update()
@@ -23,6 +25,11 @@ public class Woman : MonoBehaviourPun
             {
                 transform.rotation = Quaternion.LookRotation(dir);
                 transform.Translate(Vector3.forward * speed * Time.deltaTime);
+                ani.SetInteger("state", 1);
+            }
+            else
+            {
+                ani.SetInteger("state", 0);
             }
         }
     }
