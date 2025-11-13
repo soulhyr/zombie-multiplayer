@@ -10,14 +10,6 @@ public class UIRoomScollview : MonoBehaviour
     public Transform content;
     public GameObject uiRoomCellViewPrefab;
 
-    public void AddEvents()
-    {
-        EventDispatcher.instance.AddEventHandler<List<RoomInfo>>(EventDispatcher.EventType.OnRoomListUpdate, (type, data) =>
-        {
-            Debug.Log(data.Count);
-            txtNoRoom.SetActive(data.Count == 0);
-        });
-    }
     public void UpdateUI(List<RoomInfo> roomList)
     {
         // todo : 기존 UI 모두 제거

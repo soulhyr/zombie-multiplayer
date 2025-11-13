@@ -116,8 +116,6 @@ public class LobbyMain : MonoBehaviour
             btnLeaveRoom.gameObject.SetActive(false);
             btnCreateRoom.gameObject.SetActive(true);
         });
-        
-        uiRoomScrollview.AddEvents();
     }
     
     private void nicknameSubmitted(string nick)
