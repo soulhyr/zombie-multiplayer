@@ -68,6 +68,12 @@ public class LobbyMain : MonoBehaviour
             Debug.Log($"Room count: {Pun2Manager.Instance.GetRoomCount()}");
             // PhotonNetwork.LoadLevel("ReadyLobby");
         });
+
+        EventDispatcher.instance.AddEventHandler<LobbyRoomInfo>(EventDispatcher.EventType.OnCreatedRoom, (type, data) =>
+        {
+            Debug.Log("OnCreatedRoom");
+            DataManager.Instance.LobbyRoomInfos.Add(data);
+        });
         
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedLobby, type =>
         {

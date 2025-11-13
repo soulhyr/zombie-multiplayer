@@ -59,6 +59,8 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
         return PhotonNetwork.CountOfRooms;
     }
 
+    public bool IsMasterClient => PhotonNetwork.IsMasterClient;
+
     public override void OnConnectedToMaster()
     {
         EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnConnectedToMaster);
@@ -92,6 +94,8 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
     public override void OnCreatedRoom()
     {
         Debug.Log("OnCreatedRoom, 서버에 방 데이터 업데이트");
+        LobbyRoomInfo info = new LobbyRoomInfo(PhotonNetwork.CurrentRoom.Name, DataManager.Instance.nickname);
+        EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnCreatedRoom, info);
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)

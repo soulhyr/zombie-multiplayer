@@ -13,6 +13,7 @@ public class EventDispatcher
         OnConnectedToMaster,
         OnJoinedLobby,
         OnDisconnected,
+        OnCreatedRoom,
         OnRoomListUpdate,
         OnJoinedRoom,
         OnLeftRoom,

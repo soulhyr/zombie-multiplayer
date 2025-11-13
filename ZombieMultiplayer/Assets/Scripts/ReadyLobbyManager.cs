@@ -84,7 +84,7 @@ public class ReadyLobbyManager : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            DataManager.Instance.players.Add(new ReadyInfo(nickName, false));
+            DataManager.Instance.players.Add(new RoomMemberInfo(nickName, false));
             Debug.Log("Player Joined!");
         }
     }
@@ -94,7 +94,7 @@ public class ReadyLobbyManager : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            ReadyInfo found = DataManager.Instance.players.Find(x => x.nickName == nickName);
+            RoomMemberInfo found = DataManager.Instance.players.Find(x => x.nickName == nickName);
             found.isReady = true;
             Debug.Log("Player Ready!");
             SetButton(btnStart, true);
