@@ -8,6 +8,7 @@ public class RoomManager : MonoBehaviour
 {
     public GameObject woman1;
     public GameObject woman2;
+    public Button btnBack;
     public Button btnStart;
     public Button btnReady;
     public TMP_Text nickname1;
@@ -52,6 +53,30 @@ public class RoomManager : MonoBehaviour
             btnReady.GetComponentInChildren<TMP_Text>().text = isReady ? "UnReady" : "Ready";
             SetButton(btnStart,isReady);
         });
+        
+        btnBack.onClick.AddListener(() =>
+        {
+            Pun2Manager.Instance.LeaveRoom();
+        });
+        
+        
+        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnLeftRoom, type =>
+        {
+            // Debug.Log("방 나오기 성공");
+            Debug.Log($"[{Pun2Manager.Instance.NickName}] 님이 방에서 나갔습니다.");
+            Pun2Manager.Instance.LoadScene("Lobby");
+            // btnLeaveRoom.gameObject.SetActive(false);
+            // btnCreateRoom.gameObject.SetActive(true);
+            // uiRoomScrollview.Show();
+            // loadingUI.Hide();
+        });
+        
+        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedRoom, type =>
+        {
+            Debug.Log("방 접속 성공");
+            Debug.Log($"[{Pun2Manager.Instance.NickName}] 님이 방에 들어왔습니다.");
+        });
+
     }
 
     private void SetButton(Button btn, bool isActive)

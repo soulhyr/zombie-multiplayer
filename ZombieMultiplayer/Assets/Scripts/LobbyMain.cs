@@ -32,91 +32,44 @@ public class LobbyMain : MonoBehaviour
     private void AddEvents()
     {
         btnSubmit.onClick.AddListener(() => nicknameSubmitted(nickname.text));
-        // btnCreateRoom.onClick.AddListener(() => PhotonManager.Instance
-
-        btnCreateRoom.onClick.AddListener(() =>
-        {
-            Debug.Log("방 생성 요청");
-            Pun2Manager.Instance.CreateRoom();
-        });
-        
-        btnLeaveRoom.onClick.AddListener(() =>
-        {
-            Debug.Log("방 나가기 요청");
-            Pun2Manager.Instance.LeaveRoom();
-        });
+        btnCreateRoom.onClick.AddListener(() => Pun2Manager.Instance.CreateRoom());
+        btnLeaveRoom.onClick.AddListener(() => Pun2Manager.Instance.LeaveRoom());
         
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnConnectedToMaster, type =>
         {
-            Debug.Log("OnConnectedToMaster");
+            Debug.Log("마스터 접속 성공");
             loadingUI.Hide();
             if (DataManager.Instance.nickname.Length == 0)
             {
-                Debug.Log("nickname 없어!");
+                Debug.Log("nickname 없음");
                 nicknameArea.gameObject.SetActive(true);
             }
             else
             {
-                Debug.Log($"nickname : {DataManager.Instance.nickname}");
+                Debug.Log($"nickname 존재 : {DataManager.Instance.nickname}");
                 Pun2Manager.Instance.JoinLobby();
             }
-
         });
         
-        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedRoom, type =>
-        {
-            Debug.Log("OnJoinedRoom");
-            loadingUI.Hide();
-            // 룸 목록 불러오기.
-            // Pun2Manager.Instance.LoadScene("ReadyLobby");
-            uiRoomScrollview.Hide();
-            btnCreateRoom.gameObject.SetActive(false);
-            btnLeaveRoom.gameObject.SetActive(true); 
-            Debug.Log($"Room count: {Pun2Manager.Instance.GetRoomCount()}");
-            // PhotonNetwork.LoadLevel("ReadyLobby");
-        });
-
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnCreatedRoom, type =>
         {
-            Debug.Log("OnCreatedRoom start");
-            // DataManager.Instance.LobbyRoomInfos.Add(data);
-            Pun2Manager.Instance.LoadScene("ReadyLobby");
-            Debug.Log("OnCreatedRoom end");
+            Debug.Log("방 생성 성공, Room 이동");
+            Pun2Manager.Instance.LoadScene("Room");
         });
         
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedLobby, type =>
         {
-            Debug.Log("OnJoinedLobby start");
-            loadingUI.Hide();
-            // 룸 목록 불러오기.
+            Debug.Log("로비 접속 성공");
+            Debug.Log($"[{DataManager.Instance.nickname}] 님이 로비에 왔습니다.");
             nicknameArea.SetActive(false);
             btnCreateRoom.gameObject.SetActive(true);
             uiRoomScrollview.Show();
-            
-            Debug.Log("OnJoinedLobby end");
-            // PhotonNetwork.LoadLevel("ReadyLobby");
-        });
-        
-        
-        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnLeftRoom, type =>
-        {
-            Debug.Log("OnJoinedLobby");
-            
-            Debug.Log($"Room count: {Pun2Manager.Instance.GetRoomCount()}");
-            
             loadingUI.Hide();
-            // 룸 목록 불러오기.
-            btnLeaveRoom.gameObject.SetActive(false);
-            btnCreateRoom.gameObject.SetActive(true);
-            uiRoomScrollview.Show();
-            
-            // PhotonNetwork.LoadLevel("ReadyLobby");
         });
+        
         
         EventDispatcher.instance.AddEventHandler<List<RoomInfo>>(EventDispatcher.EventType.OnRoomListUpdate, (type, data) =>
         {
-            Debug.Log("OnRoomListUpdate");
-            Debug.Log($"Room count: {Pun2Manager.Instance.GetRoomCount()}");
             loadingUI.Hide();
             
             // 룸 목록 불러오기.
