@@ -65,14 +65,14 @@ public class LobbyMain : MonoBehaviour
     {
         loadingUI.Show();
         // Debug.Log("마스터 접속 성공");
-        if (DataManager.Instance.nickname.Length == 0)
+        if (Pun2Manager.Instance.NickName.Length == 0)
         {
             Debug.Log("nickname 없음");
             nicknameArea.gameObject.SetActive(true);
         }
         else
         {
-            Debug.Log($"nickname 존재 : {DataManager.Instance.nickname}");
+            Debug.Log($"nickname 존재 : {Pun2Manager.Instance.NickName}");
             Pun2Manager.Instance.JoinLobby();
         }
         loadingUI.Hide();
@@ -81,7 +81,7 @@ public class LobbyMain : MonoBehaviour
     private void JoinedLobby()
     {
         loadingUI.Show();
-        Debug.Log($"[{DataManager.Instance.nickname}] 님이 로비에 왔습니다.");
+        Debug.Log($"[{Pun2Manager.Instance.NickName}] 님이 로비에 왔습니다.");
         nicknameArea.SetActive(false);
         btnCreateRoom.gameObject.SetActive(true);
         uiRoomScrollview.Show();
@@ -104,8 +104,8 @@ public class LobbyMain : MonoBehaviour
     {
         if (nick.Trim().Length > 0)
         {
-            DataManager.Instance.nickname = nick;
-            Debug.Log($"{DataManager.Instance.nickname}님이 접속하였습니다.");
+            Pun2Manager.Instance.NickName = nick;
+            Debug.Log($"{Pun2Manager.Instance.NickName}님이 접속하였습니다.");
             Pun2Manager.Instance.JoinLobby();
         }
         else

@@ -10,7 +10,6 @@ public class DataManager
     private bool useJson = false;
     private static readonly DataManager instance = new DataManager();
     public static DataManager Instance => instance;
-    public string nickname = string.Empty;
     public List<RoomMemberInfo> roomMemberInfos = new List<RoomMemberInfo>();
     // public List<LobbyRoomInfo> lobbyRooms = new List<LobbyRoomInfo>();
     public List<LobbyRoomInfo> rooms = new List<LobbyRoomInfo>();

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using ExitGames.Client.Photon;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
@@ -20,7 +21,7 @@ public class RoomManager : MonoBehaviour
     
     private bool isReady;
     
-    void Start()
+    void Awake()
     {
         loadingUI = Instantiate(uiLoadingPrefab);
         loadingUI.Show();
@@ -55,6 +56,8 @@ public class RoomManager : MonoBehaviour
         //     woman2.SetActive(true);
         //     nickname2.text = DataManager.Instance.nickname;
         // }
+        
+        UpdatePlayerListUI("님이 방에 들어왔습니다.");
     }
 
     private void ResetEvent()
@@ -78,21 +81,24 @@ public class RoomManager : MonoBehaviour
         btnStart.onClick.AddListener(() => Pun2Manager.Instance.LoadScene("Main"));
         btnReady.onClick.AddListener(() =>
         {
+            isReady = !isReady;
             Debug.Log($"btnReady, isReady: {isReady}");
             btnReady.GetComponentInChildren<TMP_Text>().text = isReady ? "UnReady" : "Ready";
             SetButton(btnStart, isReady);
             btnStart.interactable = true;
-            isReady = !isReady;
+            
+            Hashtable props = new Hashtable();
+            props["ready"] = isReady;
+            Pun2Manager.Instance.SetMyProperties(props);
         });
         
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnLeftRoom, type =>
         {
-            Debug.Log($"[{DataManager.Instance.nickname}] 님이 방에서 나갔습니다.");
+            Debug.Log($"[{Pun2Manager.Instance.NickName}] 님이 방에서 나갔습니다.");
             Pun2Manager.Instance.LoadScene("Lobby");
             
             Debug.Log("LoadScene End");
         });
-        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedRoom, type => UpdatePlayerListUI("님이 방에 들어왔습니다."));
         EventDispatcher.instance.AddEventHandler<Player>(EventDispatcher.EventType.OnPlayerEnteredRoom, (type, data) => 
         {
             Debug.Log($"{data.NickName}님이 방에 들어왔습니다!");
@@ -103,6 +109,17 @@ public class RoomManager : MonoBehaviour
             Debug.Log($"{data.NickName}님이 방에서 나갔습니다!");
             UpdatePlayerListUI();
         });
+        EventDispatcher.instance.AddEventHandler<Tuple<Player, Hashtable>>(EventDispatcher.EventType.OnPlayerPropertiesUpdate, (type, data) =>
+        {
+            // todo : 동작 확인 필요.
+            Hashtable changedProps = data.Item2;
+            btnStart.interactable = changedProps.ContainsKey("ready") && changedProps["ready"].Equals(true);
+        });
+        
+        // todo : 방장 바뀌었을때 처리.
+        // todo : 모두 레디하면 게임 이동.
+        // todo : 게임에서 닉네임 표기.
+        
         Debug.Log("AddEvents end");
     }
     

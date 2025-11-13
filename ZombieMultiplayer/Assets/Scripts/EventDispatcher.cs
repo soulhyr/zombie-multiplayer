@@ -19,6 +19,7 @@ public class EventDispatcher
         OnLeftRoom,
         OnPlayerEnteredRoom,
         OnPlayerLeftRoom,
+        OnPlayerPropertiesUpdate
     }
     
     private EventDispatcher()
@@ -91,7 +92,7 @@ public class EventDispatcher
             }
         }
     }
-
+    
     public int GetEventHandlerCount(EventType type)
     {
         var eventHandlers = GetEventHandlers(type);
