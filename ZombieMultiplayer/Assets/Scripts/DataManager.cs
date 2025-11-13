@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
@@ -31,22 +32,25 @@ public class DataManager
 
     public string AddRoom(string id, int maxPlayers)
     {
-        string strName = DateTime.Now.ToString("yyyyMMddHHmmss");
-        LobbyRoomInfo data = new LobbyRoomInfo(id, strName, 1, maxPlayers);
-        if (useJson)
+        if (rooms.Count(x => x.id == id) == 0)
         {
-            List<LobbyRoomInfo> list = LoadRooms();
-            
-            if (list == null)
-                list = new List<LobbyRoomInfo>();
-            list.Add(data);
-            SaveRooms(list);
+            LobbyRoomInfo data = new LobbyRoomInfo(id, id, 1, maxPlayers);
+            if (useJson)
+            {
+                List<LobbyRoomInfo> list = LoadRooms();
+
+                if (list == null)
+                    list = new List<LobbyRoomInfo>();
+                list.Add(data);
+                SaveRooms(list);
+            }
+            else
+            {
+                rooms.Add(data);
+            }
         }
-        else
-        {
-            rooms.Add(data);
-        }
-        return strName;
+
+        return id;
     }
 
     public void UpdateRoom(string id, int curPlayers)

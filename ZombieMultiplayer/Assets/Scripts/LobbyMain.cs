@@ -15,85 +15,89 @@ public class LobbyMain : MonoBehaviour
     public Button btnLeaveRoom;
 
     private UILoading loadingUI;
-    void Start()
-    {
-        Init();
-        AddEvents();
-    }
     
-    private void OnDestroy()
+    void Awake()
     {
-        EventDispatcher.instance.RemoveEventHandler(EventDispatcher.EventType.OnConnectedToMaster);
-        EventDispatcher.instance.RemoveEventHandler(EventDispatcher.EventType.OnCreatedRoom);
-        EventDispatcher.instance.RemoveEventHandler(EventDispatcher.EventType.OnJoinedLobby);
-        EventDispatcher.instance.RemoveEventHandler(EventDispatcher.EventType.OnRoomListUpdate);
-    }
-
-    private void Init()
-    {
-        Debug.Log("init");
-        loadingUI = Instantiate(uiLoadingPrefab);
+        if (loadingUI == null)
+            loadingUI = Instantiate(uiLoadingPrefab);
+        
         loadingUI.Show();
         
-        Pun2Manager.Instance.Init();
+        Init();
+        AddEvents();
+        
+        loadingUI.Hide();
+    }
+    
+    void OnDestroy() => ResetEvent();
+
+    private void Init() => Pun2Manager.Instance.Init();
+    
+    private void ResetEvent()
+    {
+        btnSubmit.onClick.RemoveAllListeners();
+        btnCreateRoom.onClick.RemoveAllListeners();
+        btnLeaveRoom.onClick.RemoveAllListeners();
+
+        EventDispatcher.instance.RemoveAllEventHandlers();
     }
     
     private void AddEvents()
     {
+        ResetEvent();
+        
         btnSubmit.onClick.AddListener(() => nicknameSubmitted(nickname.text));
         btnCreateRoom.onClick.AddListener(() => Pun2Manager.Instance.CreateRoom());
         btnLeaveRoom.onClick.AddListener(() => Pun2Manager.Instance.LeaveRoom());
-        
-        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnConnectedToMaster, type =>
-        {
-            Debug.Log("마스터 접속 성공");
-            loadingUI.Hide();
-            if (DataManager.Instance.nickname.Length == 0)
-            {
-                Debug.Log("nickname 없음");
-                nicknameArea.gameObject.SetActive(true);
-            }
-            else
-            {
-                Debug.Log($"nickname 존재 : {DataManager.Instance.nickname}");
-                Pun2Manager.Instance.JoinLobby();
-            }
-        });
-        
-        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnCreatedRoom, type =>
-        {
-            Debug.Log("방 생성 성공, Room 이동");
-            // Pun2Manager.Instance.LoadScene("Room");
-        });
-        
-        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedRoom, type =>
-        {
-            Debug.Log("방 조인");
-            Pun2Manager.Instance.LoadScene("Room");
-        });
-        
-        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedLobby, type =>
-        {
-            Debug.Log("로비 접속 성공");
-            Debug.Log($"[{DataManager.Instance.nickname}] 님이 로비에 왔습니다.");
-            nicknameArea.SetActive(false);
-            btnCreateRoom.gameObject.SetActive(true);
-            uiRoomScrollview.Show();
-            loadingUI.Hide();
-        });
-        
-        
+
+        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnConnectedToMaster, type => MasterConnedted());
+        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnCreatedRoom, type => Debug.Log("방 생성 성공, Room 이동"));
+        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedRoom, type => Pun2Manager.Instance.LoadScene("Room"));
+        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedLobby, type => JoinedLobby());
         EventDispatcher.instance.AddEventHandler<List<RoomInfo>>(EventDispatcher.EventType.OnRoomListUpdate, (type, data) =>
         {
-            loadingUI.Hide();
-            
-            // 룸 목록 불러오기.
-            uiRoomScrollview.Show();
-            uiRoomScrollview.UpdateUI(data);
-            
-            btnLeaveRoom.gameObject.SetActive(false);
-            btnCreateRoom.gameObject.SetActive(true);
+            Debug.Log("OnRoomListUpdate");
+            RoomListUpdate(data);
         });
+    }
+
+    private void MasterConnedted()
+    {
+        loadingUI.Show();
+        // Debug.Log("마스터 접속 성공");
+        if (DataManager.Instance.nickname.Length == 0)
+        {
+            Debug.Log("nickname 없음");
+            nicknameArea.gameObject.SetActive(true);
+        }
+        else
+        {
+            Debug.Log($"nickname 존재 : {DataManager.Instance.nickname}");
+            Pun2Manager.Instance.JoinLobby();
+        }
+        loadingUI.Hide();
+    }
+
+    private void JoinedLobby()
+    {
+        loadingUI.Show();
+        Debug.Log($"[{DataManager.Instance.nickname}] 님이 로비에 왔습니다.");
+        nicknameArea.SetActive(false);
+        btnCreateRoom.gameObject.SetActive(true);
+        uiRoomScrollview.Show();
+        Debug.Log("test");
+        loadingUI.Hide();
+    }
+
+    private void RoomListUpdate(List<RoomInfo> data)
+    { 
+        loadingUI.Show();
+        uiRoomScrollview.Show();
+        uiRoomScrollview.UpdateUI(data);
+            
+        btnLeaveRoom.gameObject.SetActive(false);
+        btnCreateRoom.gameObject.SetActive(true);
+        loadingUI.Hide();
     }
     
     private void nicknameSubmitted(string nick)

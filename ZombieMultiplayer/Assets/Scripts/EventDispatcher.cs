@@ -17,6 +17,8 @@ public class EventDispatcher
         OnRoomListUpdate,
         OnJoinedRoom,
         OnLeftRoom,
+        OnPlayerEnteredRoom,
+        OnPlayerLeftRoom,
     }
     
     private EventDispatcher()

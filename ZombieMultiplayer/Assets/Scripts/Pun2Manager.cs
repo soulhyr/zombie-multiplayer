@@ -39,8 +39,11 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
 
     public void Init()
     {
-        PhotonNetwork.GameVersion = gameVersion;
-        PhotonNetwork.ConnectUsingSettings();
+        if (!PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.GameVersion = gameVersion;
+            PhotonNetwork.ConnectUsingSettings();
+        }
     }
 
     public void CreateRoom() => PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
@@ -48,6 +51,7 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
     public void LeaveRoom() => PhotonNetwork.LeaveRoom();
     public void JoinLobby() => PhotonNetwork.JoinLobby();
     public void LoadScene(string sceneName) => PhotonNetwork.LoadLevel(sceneName);
+    public Player[] PlayerList => PhotonNetwork.PlayerList;
 
     public int GetRoomCount() => PhotonNetwork.CountOfRooms;
 
@@ -55,16 +59,27 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
     public string NickName => PhotonNetwork.NickName;
 
     public override void OnConnectedToMaster() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnConnectedToMaster);
-    public override void OnJoinedLobby() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnJoinedLobby);
     public override void OnDisconnected(DisconnectCause cause) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnDisconnected);
+    public override void OnJoinedLobby()
+    {
+        if (PhotonNetwork.InLobby)
+        {
+            var lobby = PhotonNetwork.CurrentLobby;
+            Debug.Log($"현재 로비 이름: {lobby.Name ?? "(Default Lobby)"}");
+            Debug.Log($"로비 타입: {lobby.Type}");
+        }
+        else
+        {
+            Debug.Log("아직 어떤 로비에도 속해 있지 않습니다.");
+        }
+        
+        EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnJoinedLobby);
+    }
     public override void OnJoinedRoom() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnJoinedRoom);
     public override void OnCreatedRoom() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnCreatedRoom);
     public override void OnCreateRoomFailed(short returnCode, string message) => Debug.Log($"OnCreateRoomFailed: {message}");
     public override void OnRoomListUpdate(List<RoomInfo> roomList) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnRoomListUpdate, roomList);
-    public override void OnLeftRoom()
-    {
-        Debug.Log("OnLeftRoom");
-        EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnLeftRoom);
-    }
-    public override void OnPlayerLeftRoom(Player otherPlayer) => Debug.Log("OnPlayerLeftRoom");
+    public override void OnLeftRoom() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnLeftRoom);
+    public override void OnPlayerEnteredRoom(Player newPlayer) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnPlayerEnteredRoom, newPlayer);
+    public override void OnPlayerLeftRoom(Player otherPlayer) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnPlayerLeftRoom, otherPlayer);
 }

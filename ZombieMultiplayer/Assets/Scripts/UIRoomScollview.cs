@@ -15,6 +15,10 @@ public class UIRoomScollview : MonoBehaviour
 
     public void UpdateUI(List<RoomInfo> roomList)
     {
+        for (int i = 0; i < content.childCount; i++)
+            Destroy(content.GetChild(i).gameObject);
+
+        Debug.Log(content.childCount);
         foreach (var room in roomList)
         {
             Debug.Log(room);
@@ -25,35 +29,21 @@ public class UIRoomScollview : MonoBehaviour
             {
                 // Debug.Log($"룸 아이템 삭제!, room.Name: {room.Name}");
                 DataManager.Instance.RemoveRoom(id);
-                RemoveContentItme(id);
                 continue;
             }
-
+            Debug.Log("생성");
             var item = Instantiate(uiRoomCellViewPrefab, content);
             item.name = id;
-            item.GetComponentInChildren<TMP_Text>().text = $"{roomName} (1/{max})";
-            item.GetComponentInChildren<Button>().onClick.AddListener(() =>
-            {
-                Debug.Log(item.name);
-                Debug.Log($"room name : {id}");
-                Pun2Manager.Instance.JoinRoom(id);
-            });
-            // Debug.Log($"룸 아이템 생성!, roomName: {room.Name}");
+            UIRoomCellView itemLogic = item.GetComponent<UIRoomCellView>();
+            itemLogic.roomInfo.id = id;
+            itemLogic.roomInfo.roomName = roomName;
+            itemLogic.roomInfo.maxPlayers = max;
+            itemLogic.roomInfo.currentPlayers = 1;
+            itemLogic.SetRoomName();
         }
+        Debug.Log(content.childCount);
         txtNoRoom.SetActive(content.childCount == 0);
         // Debug.Log($"실제 보이는 룸 수 : {content.childCount}");
-    }
-
-    private void RemoveContentItme(string roomName)
-    {
-        for (int i = 0; i < content.childCount; i++)
-        {
-            if (content.GetChild(i).name == roomName)
-            {
-                Destroy(content.GetChild(i).gameObject);
-                break;
-            }
-        }
     }
 
     public void Show() => gameObject.SetActive(true);

@@ -269,6 +269,7 @@ GameObject:
   - component: {fileID: 1402535535619006934}
   - component: {fileID: 8783287460074475553}
   - component: {fileID: 3288614683009165422}
+  - component: {fileID: 5005681195754808385}
   m_Layer: 5
   m_Name: UIRoomCellView
   m_TagString: Untagged
@@ -361,6 +362,25 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &5005681195754808385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3743309058706462508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce1ae99ceb811a146a0eac375a6a81db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  txtName: {fileID: 6169282772688696315}
+  btn: {fileID: 3770547170241572830}
+  roomInfo:
+    id: 
+    roomName: 
+    currentPlayers: 0
+    maxPlayers: 0
 --- !u!1 &4220418833514220553
 GameObject:
   m_ObjectHideFlags: 0
@@ -455,8 +475,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 46
-  m_fontSizeBase: 46
+  m_fontSize: 36
+  m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
