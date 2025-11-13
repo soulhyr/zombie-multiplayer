@@ -1,47 +1,63 @@
 using System.Collections.Generic;
 using Photon.Pun;
-using Photon.Pun.Demo.Cockpit.Forms;
 using Photon.Realtime;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Pun2Manager : MonoBehaviourPunCallbacks
 {
-    private static readonly Pun2Manager instance = new Pun2Manager();
-    public static Pun2Manager Instance => instance;
+    private static Pun2Manager instance;
+    public static Pun2Manager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<Pun2Manager>();
+
+                // 만약 씬에 없으면 생성
+                if (instance == null)
+                {
+                    GameObject go = new GameObject("Pun2Manager");
+                    instance = go.AddComponent<Pun2Manager>();
+                }
+
+                // 씬 전환 시에도 파괴되지 않게 설정
+                DontDestroyOnLoad(instance.gameObject);
+            }
+
+            return instance;
+        }
+    }
+
     private string gameVersion = "1";
 
-    private Pun2Manager() { }
+    private void Awake()
+    {
+        // 중복 방지 (기존 인스턴스가 이미 존재하면 자신 파괴)
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
     public void Init()
     {
         PhotonNetwork.GameVersion = gameVersion;
         PhotonNetwork.ConnectUsingSettings();
     }
 
-    // private void Connect()
-    // {
-    //     Debug.Log($"IsConnected : {PhotonNetwork.IsConnected}");
-    //     if (PhotonNetwork.IsConnected)
-    //     {
-    //         PhotonNetwork.JoinRandomRoom();
-    //     }
-    //     else
-    //     {
-    //         PhotonNetwork.ConnectUsingSettings();
-    //     }
-    // }
-
     public void CreateRoom()
     {
         PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
-        // EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnConnectedToMaster);
     }
 
     public void LeaveRoom()
     {
         PhotonNetwork.LeaveRoom();
-        // EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnConnectedToMaster);
     }
 
     public void JoinLobby()
@@ -54,12 +70,10 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
         PhotonNetwork.LoadLevel(sceneName);
     }
 
-    public int GetRoomCount()
-    {
-        return PhotonNetwork.CountOfRooms;
-    }
+    public int GetRoomCount() => PhotonNetwork.CountOfRooms;
 
     public bool IsMasterClient => PhotonNetwork.IsMasterClient;
+    public string NickName => PhotonNetwork.NickName;
 
     public override void OnConnectedToMaster()
     {
@@ -78,29 +92,17 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        Debug.Log($"isMaster: {PhotonNetwork.IsMasterClient}");
-        // Debug.Log(GetRoomCount());
-
         EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnJoinedRoom);
     }
 
-    // public override void OnJoinRandomFailed(short returnCode, string message)
-    // {
-    //     Debug.Log($"OnJoinRandomFailed, returnCode: {returnCode}, message: {message}");
-    //     
-    //     PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
-    // }
-
-    // public override void OnCreatedRoom()
-    // {
-    //     Debug.Log("OnCreatedRoom, 서버에 방 데이터 업데이트");
-    //     
-    //     // EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnCreatedRoom, info);
-    // }
+    public override void OnCreatedRoom()
+    {
+        EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnCreatedRoom);
+    }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
-        Debug.Log($"OnCreateRoomFailed, returnCode: {returnCode}, message: {message}, 실패 처리 필요");
+        Debug.Log($"OnCreateRoomFailed: {message}");
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -110,7 +112,6 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        Debug.Log($"PhotonNetwork.InLobby: {PhotonNetwork.InLobby}");
         PhotonNetwork.JoinLobby();
         EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnLeftRoom);
     }

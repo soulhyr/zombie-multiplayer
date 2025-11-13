@@ -51,9 +51,16 @@ public class LobbyMain : MonoBehaviour
             Debug.Log("OnConnectedToMaster");
             loadingUI.Hide();
             if (DataManager.Instance.nickname.Length == 0)
+            {
+                Debug.Log("nickname 없어!");
                 nicknameArea.gameObject.SetActive(true);
-            
-            Pun2Manager.Instance.JoinLobby();
+            }
+            else
+            {
+                Debug.Log($"nickname : {DataManager.Instance.nickname}");
+                Pun2Manager.Instance.JoinLobby();
+            }
+
         });
         
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedRoom, type =>
@@ -69,21 +76,24 @@ public class LobbyMain : MonoBehaviour
             // PhotonNetwork.LoadLevel("ReadyLobby");
         });
 
-        // EventDispatcher.instance.AddEventHandler<LobbyRoomInfo>(EventDispatcher.EventType.OnCreatedRoom, (type, data) =>
-        // {
-        //     Debug.Log("OnCreatedRoom");
-        //     // DataManager.Instance.LobbyRoomInfos.Add(data);
-        // });
+        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnCreatedRoom, type =>
+        {
+            Debug.Log("OnCreatedRoom start");
+            // DataManager.Instance.LobbyRoomInfos.Add(data);
+            Pun2Manager.Instance.LoadScene("ReadyLobby");
+            Debug.Log("OnCreatedRoom end");
+        });
         
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedLobby, type =>
         {
-            Debug.Log("OnJoinedLobby");
+            Debug.Log("OnJoinedLobby start");
             loadingUI.Hide();
             // 룸 목록 불러오기.
             nicknameArea.SetActive(false);
             btnCreateRoom.gameObject.SetActive(true);
             uiRoomScrollview.Show();
             
+            Debug.Log("OnJoinedLobby end");
             // PhotonNetwork.LoadLevel("ReadyLobby");
         });
         
@@ -124,17 +134,11 @@ public class LobbyMain : MonoBehaviour
         {
             DataManager.Instance.nickname = nick;
             Debug.Log($"{DataManager.Instance.nickname}님이 접속하였습니다.");
-            
-            // nicknameArea.SetActive(false);
-            // btnCreateRoom.gameObject.SetActive(true);
-            // uiRoomScrollview.Show();
-            //
-            
-            // btnStart.gameObject.SetActive(true);
+            Pun2Manager.Instance.JoinLobby();
         }
         else
         {
-            // btnStart.gameObject.SetActive(false);
+            Debug.Log("아이디를 정확히 입력해라...");
         }
     }
 
