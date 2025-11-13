@@ -245,6 +245,7 @@ MonoBehaviour:
   btnReady: {fileID: 966829034}
   nickname1: {fileID: 347430119}
   nickname2: {fileID: 1683252462}
+  uiLoadingPrefab: {fileID: 2048294210623830887, guid: 47f0c319ea50d8443bae81b4caf099be, type: 3}
 --- !u!1 &129366298
 GameObject:
   m_ObjectHideFlags: 0

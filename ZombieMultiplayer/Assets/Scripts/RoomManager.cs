@@ -14,23 +14,33 @@ public class RoomManager : MonoBehaviour
     public TMP_Text nickname1;
     public TMP_Text nickname2;
 
+    public UILoading uiLoadingPrefab;
+    private UILoading loadingUI;
+    
     private bool isReady;
     
     void Start()
     {
+        loadingUI = Instantiate(uiLoadingPrefab);
+        loadingUI.Show();
+        
         Init();
         AddEvents();
+        
+        loadingUI.Hide();
     }
 
     private void Init()
     {
-        SetButton(btnStart, Pun2Manager.Instance.IsMasterClient);
-        SetButton(btnStart, !Pun2Manager.Instance.IsMasterClient);
+        
+        SetButton(btnStart, PhotonNetwork.IsMasterClient);
+        SetButton(btnStart, !PhotonNetwork.IsMasterClient);
         btnStart.interactable = false;
-        btnStart.gameObject.SetActive(Pun2Manager.Instance.IsMasterClient);
-        btnReady.gameObject.SetActive(!Pun2Manager.Instance.IsMasterClient);
-
-        if (Pun2Manager.Instance.IsMasterClient)
+        btnStart.gameObject.SetActive(PhotonNetwork.IsMasterClient);
+        btnReady.gameObject.SetActive(!PhotonNetwork.IsMasterClient);
+        
+        
+        if (PhotonNetwork.IsMasterClient)
         {
             woman1.SetActive(true);
             Debug.Log("nic : " + DataManager.Instance.nickname);
@@ -43,10 +53,15 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    
     private void AddEvents()
     {
-        btnBack.onClick.AddListener(() => Pun2Manager.Instance.LeaveRoom());
-        btnStart.onClick.AddListener(() => Pun2Manager.Instance.LoadScene("Main"));
+        btnBack.onClick.AddListener(() =>
+        {
+            Debug.Log("btnBack");
+            Pun2Manager.Instance.LeaveRoom();
+        });
+        btnStart.onClick.AddListener(() => PhotonNetwork.LoadLevel("Main"));
         btnReady.onClick.AddListener(() =>
         {
             btnReady.GetComponentInChildren<TMP_Text>().text = isReady ? "UnReady" : "Ready";
@@ -58,6 +73,8 @@ public class RoomManager : MonoBehaviour
             // Debug.Log("방 나오기 성공");
             Debug.Log($"[{DataManager.Instance.nickname}] 님이 방에서 나갔습니다.");
             Pun2Manager.Instance.LoadScene("Lobby");
+            
+            // PhotonNetwork.JoinLobby();
             // btnLeaveRoom.gameObject.SetActive(false);
             // btnCreateRoom.gameObject.SetActive(true);
             // uiRoomScrollview.Show();
@@ -67,7 +84,7 @@ public class RoomManager : MonoBehaviour
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedRoom, type =>
         {
             Debug.Log("방 접속 성공");
-            Debug.Log($"[{Pun2Manager.Instance.NickName}] 님이 방에 들어왔습니다.");
+            Debug.Log($"[{PhotonNetwork.NickName}] 님이 방에 들어왔습니다.");
         });
 
     }

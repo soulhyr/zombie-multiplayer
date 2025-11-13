@@ -12,19 +12,13 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
         {
             if (instance == null)
             {
-                instance = FindObjectOfType<Pun2Manager>();
-
-                // 만약 씬에 없으면 생성
+                instance = FindFirstObjectByType<Pun2Manager>();
                 if (instance == null)
                 {
                     GameObject go = new GameObject("Pun2Manager");
                     instance = go.AddComponent<Pun2Manager>();
                 }
-
-                // 씬 전환 시에도 파괴되지 않게 설정
-                DontDestroyOnLoad(instance.gameObject);
             }
-
             return instance;
         }
     }
@@ -33,7 +27,6 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        // 중복 방지 (기존 인스턴스가 이미 존재하면 자신 파괴)
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
@@ -61,49 +54,17 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
     public bool IsMasterClient => PhotonNetwork.IsMasterClient;
     public string NickName => PhotonNetwork.NickName;
 
-    public override void OnConnectedToMaster()
-    {
-        EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnConnectedToMaster);
-    }
-
-    public override void OnJoinedLobby()
-    {
-        EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnJoinedLobby);
-    }
-
-    public override void OnDisconnected(DisconnectCause cause)
-    {
-        EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnDisconnected);
-    }
-
-    public override void OnJoinedRoom()
-    {
-        EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnJoinedRoom);
-    }
-
-    public override void OnCreatedRoom()
-    {
-        EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnCreatedRoom);
-    }
-
-    public override void OnCreateRoomFailed(short returnCode, string message)
-    {
-        Debug.Log($"OnCreateRoomFailed: {message}");
-    }
-
-    public override void OnRoomListUpdate(List<RoomInfo> roomList)
-    {
-        EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnRoomListUpdate, roomList);
-    }
-
+    public override void OnConnectedToMaster() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnConnectedToMaster);
+    public override void OnJoinedLobby() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnJoinedLobby);
+    public override void OnDisconnected(DisconnectCause cause) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnDisconnected);
+    public override void OnJoinedRoom() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnJoinedRoom);
+    public override void OnCreatedRoom() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnCreatedRoom);
+    public override void OnCreateRoomFailed(short returnCode, string message) => Debug.Log($"OnCreateRoomFailed: {message}");
+    public override void OnRoomListUpdate(List<RoomInfo> roomList) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnRoomListUpdate, roomList);
     public override void OnLeftRoom()
     {
-        PhotonNetwork.JoinLobby();
+        Debug.Log("OnLeftRoom");
         EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnLeftRoom);
     }
-
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        Debug.Log("OnPlayerLeftRoom");
-    }
+    public override void OnPlayerLeftRoom(Player otherPlayer) => Debug.Log("OnPlayerLeftRoom");
 }

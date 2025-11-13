@@ -32,7 +32,12 @@ public class UIRoomScollview : MonoBehaviour
             var item = Instantiate(uiRoomCellViewPrefab, content);
             item.name = id;
             item.GetComponentInChildren<TMP_Text>().text = $"{roomName} (1/{max})";
-            item.GetComponentInChildren<Button>().onClick.AddListener(() => Pun2Manager.Instance.JoinRoom(id));
+            item.GetComponentInChildren<Button>().onClick.AddListener(() =>
+            {
+                Debug.Log(item.name);
+                Debug.Log($"room name : {id}");
+                Pun2Manager.Instance.JoinRoom(id);
+            });
             // Debug.Log($"룸 아이템 생성!, roomName: {room.Name}");
         }
         txtNoRoom.SetActive(content.childCount == 0);
