@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Photon.Realtime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -95,6 +97,19 @@ public class LobbyMain : MonoBehaviour
             // PhotonNetwork.LoadLevel("ReadyLobby");
         });
         
+        EventDispatcher.instance.AddEventHandler<List<RoomInfo>>(EventDispatcher.EventType.OnRoomListUpdate, (type, data) =>
+        {
+            Debug.Log("OnRoomListUpdate");
+            Debug.Log($"Room count: {Pun2Manager.Instance.GetRoomCount()}");
+            loadingUI.Hide();
+            
+            // 룸 목록 불러오기.
+            uiRoomScrollview.Show();
+            uiRoomScrollview.UpdateUI(data);
+            
+            btnLeaveRoom.gameObject.SetActive(false);
+            btnCreateRoom.gameObject.SetActive(true);
+        });
         
         uiRoomScrollview.AddEvents();
     }
