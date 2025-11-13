@@ -14,13 +14,12 @@ public class UIRoomScollview : MonoBehaviour
 
     public void UpdateUI(List<RoomInfo> roomList)
     {
-        Debug.Log("UpdateUI");
         foreach (var room in roomList)
         {
             Debug.Log(room);
             if (room.RemovedFromList || room.PlayerCount == 0)
             {
-                Debug.Log($"룸 아이템 삭제!, room.Name: {room.Name}");
+                // Debug.Log($"룸 아이템 삭제!, room.Name: {room.Name}");
                 DataManager.Instance.RemoveRoom(room.Name);
                 RemoveContentItme(room.Name);
                 continue;
@@ -30,10 +29,10 @@ public class UIRoomScollview : MonoBehaviour
             item.name = room.Name;
             string roomName = DataManager.Instance.AddRoom(room.Name, room.MaxPlayers);
             item.GetComponentInChildren<TMP_Text>().text = $"{roomName} (1/{room.MaxPlayers})";
-            Debug.Log($"룸 아이템 생성!, roomName: {room.Name}");
+            // Debug.Log($"룸 아이템 생성!, roomName: {room.Name}");
         }
         txtNoRoom.SetActive(content.childCount == 0);
-        Debug.Log($"실제 보이는 룸 수 : {content.childCount}");
+        // Debug.Log($"실제 보이는 룸 수 : {content.childCount}");
     }
 
     private void RemoveContentItme(string roomName)

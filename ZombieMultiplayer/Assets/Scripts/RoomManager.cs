@@ -19,6 +19,7 @@ public class RoomManager : MonoBehaviour
     void Start()
     {
         Init();
+        AddEvents();
     }
 
     private void Init()
@@ -32,38 +33,30 @@ public class RoomManager : MonoBehaviour
         if (Pun2Manager.Instance.IsMasterClient)
         {
             woman1.SetActive(true);
-            nickname1.text = Pun2Manager.Instance.NickName;
+            Debug.Log("nic : " + DataManager.Instance.nickname);
+            nickname1.text = DataManager.Instance.nickname;
         }
         else
         {
             woman2.SetActive(true);
-            nickname2.text = Pun2Manager.Instance.NickName;
+            nickname2.text = DataManager.Instance.nickname;
         }
     }
 
     private void AddEvents()
     {
-        btnStart.onClick.AddListener(() =>
-        {
-            Pun2Manager.Instance.LoadScene("Main");
-        });
-        
+        btnBack.onClick.AddListener(() => Pun2Manager.Instance.LeaveRoom());
+        btnStart.onClick.AddListener(() => Pun2Manager.Instance.LoadScene("Main"));
         btnReady.onClick.AddListener(() =>
         {
             btnReady.GetComponentInChildren<TMP_Text>().text = isReady ? "UnReady" : "Ready";
             SetButton(btnStart,isReady);
         });
         
-        btnBack.onClick.AddListener(() =>
-        {
-            Pun2Manager.Instance.LeaveRoom();
-        });
-        
-        
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnLeftRoom, type =>
         {
             // Debug.Log("방 나오기 성공");
-            Debug.Log($"[{Pun2Manager.Instance.NickName}] 님이 방에서 나갔습니다.");
+            Debug.Log($"[{DataManager.Instance.nickname}] 님이 방에서 나갔습니다.");
             Pun2Manager.Instance.LoadScene("Lobby");
             // btnLeaveRoom.gameObject.SetActive(false);
             // btnCreateRoom.gameObject.SetActive(true);

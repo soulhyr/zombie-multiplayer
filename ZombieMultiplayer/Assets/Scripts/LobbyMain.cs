@@ -20,12 +20,24 @@ public class LobbyMain : MonoBehaviour
         Init();
         AddEvents();
     }
+    
+    private void OnDestroy()
+    {
+        EventDispatcher.instance.RemoveEventHandler(EventDispatcher.EventType.OnConnectedToMaster);
+        EventDispatcher.instance.RemoveEventHandler(EventDispatcher.EventType.OnCreatedRoom);
+        EventDispatcher.instance.RemoveEventHandler(EventDispatcher.EventType.OnJoinedLobby);
+        EventDispatcher.instance.RemoveEventHandler(EventDispatcher.EventType.OnRoomListUpdate);
+    }
 
     private void Init()
     {
-        loadingUI = Instantiate(uiLoadingPrefab);
+        if (loadingUI == null)
+        {
+            loadingUI = Instantiate(uiLoadingPrefab);
+            DontDestroyOnLoad(loadingUI.gameObject); // 씬 전환에도 유지
+        }
+
         loadingUI.Show();
-        
         Pun2Manager.Instance.Init();
     }
     
@@ -37,11 +49,11 @@ public class LobbyMain : MonoBehaviour
         
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnConnectedToMaster, type =>
         {
-            Debug.Log("마스터 접속 성공");
+            // Debug.Log("마스터 접속 성공");
             loadingUI.Hide();
             if (DataManager.Instance.nickname.Length == 0)
             {
-                Debug.Log("nickname 없음");
+                // Debug.Log("nickname 없음");
                 nicknameArea.gameObject.SetActive(true);
             }
             else
@@ -59,7 +71,7 @@ public class LobbyMain : MonoBehaviour
         
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedLobby, type =>
         {
-            Debug.Log("로비 접속 성공");
+            // Debug.Log("로비 접속 성공");
             Debug.Log($"[{DataManager.Instance.nickname}] 님이 로비에 왔습니다.");
             nicknameArea.SetActive(false);
             btnCreateRoom.gameObject.SetActive(true);
