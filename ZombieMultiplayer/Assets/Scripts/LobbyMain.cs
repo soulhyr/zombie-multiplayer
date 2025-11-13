@@ -50,7 +50,8 @@ public class LobbyMain : MonoBehaviour
             loadingUI.Hide();
             if (DataManager.Instance.nickname.Length == 0)
                 nicknameArea.gameObject.SetActive(true);
-            // 접속 시 처리할 것. (닉네임 설정)
+            
+            Pun2Manager.Instance.JoinLobby();
         });
         
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedRoom, type =>
@@ -104,7 +105,6 @@ public class LobbyMain : MonoBehaviour
         {
             DataManager.Instance.nickname = nick;
             Debug.Log($"{DataManager.Instance.nickname}님이 접속하였습니다.");
-            Pun2Manager.Instance.JoinLobby();
             
             // nicknameArea.SetActive(false);
             // btnCreateRoom.gameObject.SetActive(true);
