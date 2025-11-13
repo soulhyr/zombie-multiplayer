@@ -35,6 +35,7 @@ public class UIRoomScollview : MonoBehaviour
 
         // 빈 방일 경우 메시지 처리
         txtNoRoom.SetActive(content.childCount == 0);
+        Debug.Log($"실제 보이는 룸 수 : {content.childCount}");
     }
 
     public void Show() => gameObject.SetActive(true);
