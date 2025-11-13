@@ -69,11 +69,11 @@ public class LobbyMain : MonoBehaviour
             // PhotonNetwork.LoadLevel("ReadyLobby");
         });
 
-        EventDispatcher.instance.AddEventHandler<LobbyRoomInfo>(EventDispatcher.EventType.OnCreatedRoom, (type, data) =>
-        {
-            Debug.Log("OnCreatedRoom");
-            DataManager.Instance.LobbyRoomInfos.Add(data);
-        });
+        // EventDispatcher.instance.AddEventHandler<LobbyRoomInfo>(EventDispatcher.EventType.OnCreatedRoom, (type, data) =>
+        // {
+        //     Debug.Log("OnCreatedRoom");
+        //     // DataManager.Instance.LobbyRoomInfos.Add(data);
+        // });
         
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnJoinedLobby, type =>
         {

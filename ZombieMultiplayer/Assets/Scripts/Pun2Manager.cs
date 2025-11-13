@@ -91,12 +91,12 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
     //     PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
     // }
 
-    public override void OnCreatedRoom()
-    {
-        Debug.Log("OnCreatedRoom, 서버에 방 데이터 업데이트");
-        LobbyRoomInfo info = new LobbyRoomInfo(PhotonNetwork.CurrentRoom.Name, DataManager.Instance.nickname);
-        EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnCreatedRoom, info);
-    }
+    // public override void OnCreatedRoom()
+    // {
+    //     Debug.Log("OnCreatedRoom, 서버에 방 데이터 업데이트");
+    //     
+    //     // EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnCreatedRoom, info);
+    // }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
