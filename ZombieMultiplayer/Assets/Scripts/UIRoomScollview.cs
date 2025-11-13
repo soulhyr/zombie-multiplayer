@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIRoomScollview : MonoBehaviour
 {
@@ -17,18 +18,21 @@ public class UIRoomScollview : MonoBehaviour
         foreach (var room in roomList)
         {
             Debug.Log(room);
+            string id = room.Name;
+            int max = room.MaxPlayers;
+            string roomName = DataManager.Instance.AddRoom(id, max);
             if (room.RemovedFromList || room.PlayerCount == 0)
             {
                 // Debug.Log($"룸 아이템 삭제!, room.Name: {room.Name}");
-                DataManager.Instance.RemoveRoom(room.Name);
-                RemoveContentItme(room.Name);
+                DataManager.Instance.RemoveRoom(id);
+                RemoveContentItme(id);
                 continue;
             }
 
             var item = Instantiate(uiRoomCellViewPrefab, content);
-            item.name = room.Name;
-            string roomName = DataManager.Instance.AddRoom(room.Name, room.MaxPlayers);
-            item.GetComponentInChildren<TMP_Text>().text = $"{roomName} (1/{room.MaxPlayers})";
+            item.name = id;
+            item.GetComponentInChildren<TMP_Text>().text = $"{roomName} (1/{max})";
+            item.GetComponentInChildren<Button>().onClick.AddListener(() => Pun2Manager.Instance.JoinRoom(id));
             // Debug.Log($"룸 아이템 생성!, roomName: {room.Name}");
         }
         txtNoRoom.SetActive(content.childCount == 0);

@@ -50,25 +50,11 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
     }
 
-    public void CreateRoom()
-    {
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
-    }
-
-    public void LeaveRoom()
-    {
-        PhotonNetwork.LeaveRoom();
-    }
-
-    public void JoinLobby()
-    {
-        PhotonNetwork.JoinLobby();
-    }
-
-    public void LoadScene(string sceneName)
-    {
-        PhotonNetwork.LoadLevel(sceneName);
-    }
+    public void CreateRoom() => PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
+    public void JoinRoom(string roomName) => PhotonNetwork.JoinRoom(roomName);
+    public void LeaveRoom() => PhotonNetwork.LeaveRoom();
+    public void JoinLobby() => PhotonNetwork.JoinLobby();
+    public void LoadScene(string sceneName) => PhotonNetwork.LoadLevel(sceneName);
 
     public int GetRoomCount() => PhotonNetwork.CountOfRooms;
 
