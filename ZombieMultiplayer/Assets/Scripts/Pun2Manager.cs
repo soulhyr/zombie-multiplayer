@@ -35,6 +35,10 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
         }
 
         instance = this;
+        
+        if (GetComponent<PhotonView>() == null)
+            gameObject.AddComponent<PhotonView>();
+        
         DontDestroyOnLoad(gameObject);
     }
 
