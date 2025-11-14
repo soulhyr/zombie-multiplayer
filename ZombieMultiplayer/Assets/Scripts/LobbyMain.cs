@@ -12,8 +12,9 @@ public class LobbyMain : MonoBehaviour
     public TMP_InputField nickname;
     public Button btnSubmit;
     public Button btnCreateRoom;
-    public Button btnLeaveRoom;
-
+    public GameObject woman;
+    public TMP_Text txtNickname;
+    
     private UILoading loadingUI;
     
     void Awake()
@@ -37,7 +38,6 @@ public class LobbyMain : MonoBehaviour
     {
         btnSubmit.onClick.RemoveAllListeners();
         btnCreateRoom.onClick.RemoveAllListeners();
-        btnLeaveRoom.onClick.RemoveAllListeners();
 
         EventDispatcher.instance.RemoveAllEventHandlers();
     }
@@ -46,9 +46,8 @@ public class LobbyMain : MonoBehaviour
     {
         ResetEvent();
         
-        btnSubmit.onClick.AddListener(() => nicknameSubmitted(nickname.text));
+        btnSubmit.onClick.AddListener(() => NicknameSubmitted(nickname.text));
         btnCreateRoom.onClick.AddListener(() => Pun2Manager.Instance.CreateRoom());
-        btnLeaveRoom.onClick.AddListener(() => Pun2Manager.Instance.LeaveRoom());
 
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnConnectedToMaster, type => MasterConnedted());
         EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnCreatedRoom, type => Debug.Log("방 생성 성공, Room 이동"));
@@ -64,7 +63,6 @@ public class LobbyMain : MonoBehaviour
     private void MasterConnedted()
     {
         loadingUI.Show();
-        // Debug.Log("마스터 접속 성공");
         if (Pun2Manager.Instance.NickName.Length == 0)
         {
             Debug.Log("nickname 없음");
@@ -95,27 +93,26 @@ public class LobbyMain : MonoBehaviour
         uiRoomScrollview.Show();
         uiRoomScrollview.UpdateUI(data);
             
-        btnLeaveRoom.gameObject.SetActive(false);
         btnCreateRoom.gameObject.SetActive(true);
         loadingUI.Hide();
     }
     
-    private void nicknameSubmitted(string nick)
+    private void NicknameSubmitted(string nick)
     {
+        loadingUI.Show();
         if (nick.Trim().Length > 0)
         {
             Pun2Manager.Instance.NickName = nick;
             Debug.Log($"{Pun2Manager.Instance.NickName}님이 접속하였습니다.");
+            woman.SetActive(true);
+            txtNickname.gameObject.SetActive(true);
+            txtNickname.text = Pun2Manager.Instance.NickName;
             Pun2Manager.Instance.JoinLobby();
         }
         else
         {
             Debug.Log("아이디를 정확히 입력해라...");
         }
-    }
-
-    private void UpdateUI()
-    {
-        
+        loadingUI.Hide();
     }
 }

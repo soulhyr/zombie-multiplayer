@@ -10,6 +10,8 @@ public class RoomManager : MonoBehaviour
 {
     public GameObject woman1;
     public GameObject woman2;
+    public GameObject you1;
+    public GameObject you2;
     public Button btnBack;
     public Button btnStart;
     public Button btnReady;
@@ -45,18 +47,6 @@ public class RoomManager : MonoBehaviour
         btnStart.gameObject.SetActive(Pun2Manager.Instance.IsMasterClient);
         btnReady.gameObject.SetActive(!Pun2Manager.Instance.IsMasterClient);
         
-        // if (Pun2Manager.Instance.IsMasterClient)
-        // {
-        //     woman1.SetActive(true);
-        //     Debug.Log("nic : " + Pun2Manager.Instance.NickName);
-        //     nickname1.text = Pun2Manager.Instance.NickName;
-        // }
-        // else
-        // {
-        //     woman2.SetActive(true);
-        //     nickname2.text = DataManager.Instance.nickname;
-        // }
-        
         UpdatePlayerListUI("님이 방에 들어왔습니다.");
     }
 
@@ -86,6 +76,7 @@ public class RoomManager : MonoBehaviour
                 return;
             }
             Pun2Manager.Instance.AutomaticallySyncScene = true;
+            Debug.Log(Pun2Manager.Instance.AutomaticallySyncScene);
             Pun2Manager.Instance.LoadScene("Main");
         });
         btnReady.onClick.AddListener(() =>
@@ -134,6 +125,8 @@ public class RoomManager : MonoBehaviour
         Debug.Log("UpdatePlayerListUI");
         woman1.SetActive(false);
         woman2.SetActive(false);
+        you1.SetActive(false);
+        you2.SetActive(false);
         
         nickname1.text = "UnKnow";
         nickname2.text = "UnKnow";
@@ -144,11 +137,15 @@ public class RoomManager : MonoBehaviour
             if (i == 0)
             {
                 woman1.SetActive(true);
+                if (Pun2Manager.Instance.NickName == player.NickName)
+                    you1.SetActive(true);
                 nickname1.text = player.NickName;
             }
             else
             {
                 woman2.SetActive(true);
+                if (Pun2Manager.Instance.NickName == player.NickName)
+                    you2.SetActive(true);
                 nickname2.text = player.NickName;
             }
 
