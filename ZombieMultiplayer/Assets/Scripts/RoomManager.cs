@@ -48,6 +48,22 @@ public class RoomManager : MonoBehaviour
         btnReady.gameObject.SetActive(!Pun2Manager.Instance.IsMasterClient);
         
         UpdatePlayerListUI("님이 방에 들어왔습니다.");
+        
+        if (Pun2Manager.Instance.CurrentRoom != null)
+        {
+            Debug.Log("Room Name: " + Pun2Manager.Instance.CurrentRoom.Name);
+        }
+        
+        if (Pun2Manager.Instance.IsConnectedAndReady)
+        {
+            Debug.Log("Ready to sync scene");
+        }
+        else
+        {
+            Debug.Log("Not connected or not in room");
+        }
+
+
     }
 
     private void ResetEvent()

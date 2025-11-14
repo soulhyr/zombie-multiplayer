@@ -59,6 +59,9 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
     public string NickName { get => PhotonNetwork.NickName; set => PhotonNetwork.NickName = value; }
     public bool AutomaticallySyncScene { get => PhotonNetwork.AutomaticallySyncScene; set => PhotonNetwork.AutomaticallySyncScene = value; }
 
+    public Room CurrentRoom => PhotonNetwork.CurrentRoom;
+    public bool IsConnectedAndReady => PhotonNetwork.IsConnectedAndReady;
+    
     public override void OnConnectedToMaster() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnConnectedToMaster);
     public override void OnDisconnected(DisconnectCause cause) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnDisconnected);
     public override void OnJoinedLobby()

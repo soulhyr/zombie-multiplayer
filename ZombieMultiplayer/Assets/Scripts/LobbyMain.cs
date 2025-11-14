@@ -83,6 +83,9 @@ public class LobbyMain : MonoBehaviour
         nicknameArea.SetActive(false);
         btnCreateRoom.gameObject.SetActive(true);
         uiRoomScrollview.Show();
+        woman.SetActive(true);
+        txtNickname.gameObject.SetActive(true);
+        txtNickname.text = Pun2Manager.Instance.NickName;
         Debug.Log("test");
         loadingUI.Hide();
     }
