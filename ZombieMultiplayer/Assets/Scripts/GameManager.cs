@@ -88,9 +88,8 @@ public class GameManager : MonoBehaviour
         });
         EventDispatcher.instance.AddEventHandler<Player>(EventDispatcher.EventType.OnMasterClientSwitched, (type, data) =>
         {
-            Hashtable props = new Hashtable();
-            props["GameStarted"] = true;
-            Pun2Manager.Instance.SetMyProperties(props);
+            Debug.Log("Master client switched!");
+            Pun2Manager.Instance.SetGameStart(true);
         });
     }
     #endregion

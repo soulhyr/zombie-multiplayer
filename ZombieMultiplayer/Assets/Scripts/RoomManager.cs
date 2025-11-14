@@ -36,6 +36,19 @@ public class RoomManager : MonoBehaviour
         loadingUI.Hide();
     }
 
+    private void Start()
+    {
+        
+        if (PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("GameStarted") &&
+            (bool)PhotonNetwork.CurrentRoom.CustomProperties["GameStarted"])
+        {
+            Debug.Log("게임이 이미 시작됨 → 새 플레이어를 Main으로 이동!");
+            Pun2Manager.Instance.LoadScene("Main");
+            return; // Init, AddEvents는 건너뜀
+        }
+
+    }
+
     void OnDestroy() => ResetEvent();
     
     private void Init()
@@ -78,10 +91,7 @@ public class RoomManager : MonoBehaviour
             // Pun2Manager.Instance.LoadScene("Main");
             
             // Pun2Manager.Instance.LoadSceneForAll("Main");
-            
-            Hashtable props = new Hashtable();
-            props["GameStarted"] = true;
-            PhotonNetwork.CurrentRoom.SetCustomProperties(props);
+            Pun2Manager.Instance.SetGameStart(true);
 
             LoadSceneForAll("Main");
         });
@@ -107,15 +117,7 @@ public class RoomManager : MonoBehaviour
         EventDispatcher.instance.AddEventHandler<Player>(EventDispatcher.EventType.OnPlayerEnteredRoom, (type, data) => 
         {
             Debug.Log($"{data.NickName}님이 방에 들어왔습니다!");
-            // 방이 이미 게임 중이라면 바로 게임 접속.
-            if (PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("GameStarted") &&
-                (bool)PhotonNetwork.CurrentRoom.CustomProperties["GameStarted"] == true)
-            {
-                // 새로 들어온 플레이어도 바로 Main으로 이동시키기
-                Debug.Log("게임이 이미 시작됨 → 새 플레이어를 Main으로 이동!");
-                Pun2Manager.Instance.LoadScene("Main");
-                return;
-            }
+            
             UpdatePlayerListUI();
         });
         EventDispatcher.instance.AddEventHandler<Player>(EventDispatcher.EventType.OnPlayerLeftRoom, (type, data) =>

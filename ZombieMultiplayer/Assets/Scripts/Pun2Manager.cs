@@ -67,6 +67,13 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
 
         view.RPC(methodName, RpcTarget.AllBuffered, sceneName);
     }
+
+    public void SetGameStart(bool isGameStart)
+    {
+        Hashtable props = new Hashtable();
+        props["GameStarted"] = isGameStart;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(props);
+    }
     
     public override void OnConnectedToMaster() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnConnectedToMaster);
     public override void OnDisconnected(DisconnectCause cause) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnDisconnected);
