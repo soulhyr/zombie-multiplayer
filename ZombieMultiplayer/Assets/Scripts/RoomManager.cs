@@ -46,8 +46,6 @@ public class RoomManager : MonoBehaviour
         SetButton(btnReady, !Pun2Manager.Instance.IsMasterClient);
         
         btnStart.interactable = false;
-        btnStart.gameObject.SetActive(Pun2Manager.Instance.IsMasterClient);
-        btnReady.gameObject.SetActive(!Pun2Manager.Instance.IsMasterClient);
         
         UpdatePlayerListUI("님이 방에 들어왔습니다.");
     }
@@ -63,8 +61,6 @@ public class RoomManager : MonoBehaviour
     
     private void AddEvents()
     {
-        ResetEvent();
-        
         btnBack.onClick.AddListener(() =>
         {
             Debug.Log("btnBack");
@@ -125,6 +121,11 @@ public class RoomManager : MonoBehaviour
         EventDispatcher.instance.AddEventHandler<Player>(EventDispatcher.EventType.OnPlayerLeftRoom, (type, data) =>
         {
             Debug.Log($"{data.NickName}님이 방에서 나갔습니다!");
+        
+            SetButton(btnStart, false);
+            SetButton(btnReady, false);
+            btnStart.interactable = false;
+
             UpdatePlayerListUI();
         });
         EventDispatcher.instance.AddEventHandler<(Player, Hashtable)>(EventDispatcher.EventType.OnPlayerPropertiesUpdate, (type, data) =>
@@ -134,8 +135,8 @@ public class RoomManager : MonoBehaviour
         });
         EventDispatcher.instance.AddEventHandler<Player>(EventDispatcher.EventType.OnMasterClientSwitched, (type, data) =>
         {
-            SetButton(btnStart, Pun2Manager.Instance.IsMasterClient);
-            SetButton(btnReady, !Pun2Manager.Instance.IsMasterClient);
+            SetButton(btnStart, false);
+            SetButton(btnReady, false);
             btnStart.interactable = false;
         });
     }
@@ -148,7 +149,6 @@ public class RoomManager : MonoBehaviour
         you2.SetActive(false);
         nickname1.text = "UnKnow";
         nickname2.text = "UnKnow";
-        
         int i = 0;
         foreach (var player in Pun2Manager.Instance.PlayerList)
         {
