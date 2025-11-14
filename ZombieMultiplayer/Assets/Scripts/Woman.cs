@@ -6,7 +6,7 @@ public class Woman : MonoBehaviourPun
 {
     private PhotonView view;
     private Animator ani;
-    private float speed = 1f;
+    private float speed = 3f;
 
     void Awake()
     {

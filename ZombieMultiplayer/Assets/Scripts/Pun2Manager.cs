@@ -35,10 +35,6 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
         }
 
         instance = this;
-        
-        if (GetComponent<PhotonView>() == null)
-            gameObject.AddComponent<PhotonView>();
-        
         DontDestroyOnLoad(gameObject);
     }
 
@@ -65,16 +61,11 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
     public void LoadScene(string sceneName) => PhotonNetwork.LoadLevel(sceneName);
     public void SetMyProperties(Hashtable props) => PhotonNetwork.LocalPlayer.SetCustomProperties(props);
     public int GetRoomCount() => PhotonNetwork.CountOfRooms;
-    public void LoadSceneForAll(string sceneName)
+    public void LoadSceneForAll(string sceneName, PhotonView view, string methodName)
     {
-        if (!PhotonNetwork.IsMasterClient) return;
-        photonView.RPC(nameof(RPC_LoadScene), RpcTarget.AllBuffered, sceneName);
-    }
+        if (!IsMasterClient || view == null) return;
 
-    [PunRPC]
-    private void RPC_LoadScene(string sceneName)
-    {
-        PhotonNetwork.LoadLevel(sceneName);
+        view.RPC(methodName, RpcTarget.AllBuffered, sceneName);
     }
     
     public override void OnConnectedToMaster() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnConnectedToMaster);

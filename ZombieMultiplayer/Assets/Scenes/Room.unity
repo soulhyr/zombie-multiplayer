@@ -204,6 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 42227377}
   - component: {fileID: 42227378}
+  - component: {fileID: 42227379}
   m_Layer: 0
   m_Name: RoomManager
   m_TagString: Untagged
@@ -248,6 +249,28 @@ MonoBehaviour:
   nickname1: {fileID: 347430119}
   nickname2: {fileID: 1683252462}
   uiLoadingPrefab: {fileID: 2048294210623830887, guid: 47f0c319ea50d8443bae81b4caf099be, type: 3}
+--- !u!114 &42227379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 42227376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &129366298
 GameObject:
   m_ObjectHideFlags: 0

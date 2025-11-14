@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using ExitGames.Client.Photon;
+using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
@@ -20,6 +21,7 @@ public class RoomManager : MonoBehaviour
 
     public UILoading uiLoadingPrefab;
     private UILoading loadingUI;
+    private PhotonView photonView;
     
     private bool isReady;
     
@@ -39,7 +41,7 @@ public class RoomManager : MonoBehaviour
     private void Init()
     {
         Pun2Manager.Instance.Init();
-        
+        photonView = GetComponent<PhotonView>();
         SetButton(btnStart, Pun2Manager.Instance.IsMasterClient);
         SetButton(btnReady, !Pun2Manager.Instance.IsMasterClient);
         
@@ -48,22 +50,6 @@ public class RoomManager : MonoBehaviour
         btnReady.gameObject.SetActive(!Pun2Manager.Instance.IsMasterClient);
         
         UpdatePlayerListUI("님이 방에 들어왔습니다.");
-        
-        if (Pun2Manager.Instance.CurrentRoom != null)
-        {
-            Debug.Log("Room Name: " + Pun2Manager.Instance.CurrentRoom.Name);
-        }
-        
-        if (Pun2Manager.Instance.IsConnectedAndReady)
-        {
-            Debug.Log("Ready to sync scene");
-        }
-        else
-        {
-            Debug.Log("Not connected or not in room");
-        }
-
-
     }
 
     private void ResetEvent()
@@ -95,7 +81,8 @@ public class RoomManager : MonoBehaviour
             // Debug.Log(Pun2Manager.Instance.AutomaticallySyncScene);
             // Pun2Manager.Instance.LoadScene("Main");
             
-            Pun2Manager.Instance.LoadSceneForAll("Main");
+            // Pun2Manager.Instance.LoadSceneForAll("Main");
+            LoadSceneForAll("Main");
         });
         btnReady.onClick.AddListener(() =>
         {
@@ -141,12 +128,10 @@ public class RoomManager : MonoBehaviour
     
     private void UpdatePlayerListUI(string msg = "")
     {
-        Debug.Log("UpdatePlayerListUI");
         woman1.SetActive(false);
         woman2.SetActive(false);
         you1.SetActive(false);
         you2.SetActive(false);
-        
         nickname1.text = "UnKnow";
         nickname2.text = "UnKnow";
         
@@ -191,4 +176,11 @@ public class RoomManager : MonoBehaviour
 
         btn.gameObject.SetActive(isActive);
     }
+    
+    public void LoadSceneForAll(string sceneName) => Pun2Manager.Instance.LoadSceneForAll(sceneName, photonView, "RPC_LoadScene");
+
+    [PunRPC]
+    private void RPC_LoadScene(string sceneName) => Pun2Manager.Instance.LoadScene(sceneName);
+
+
 }
