@@ -5,6 +5,7 @@ using Photon.Realtime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class GameManager : MonoBehaviour
 {
@@ -84,6 +85,12 @@ public class GameManager : MonoBehaviour
         {
             if (data.ActorNumber != PhotonNetwork.LocalPlayer.ActorNumber)
                 TryLinkPlayerUI(data);
+        });
+        EventDispatcher.instance.AddEventHandler<Player>(EventDispatcher.EventType.OnMasterClientSwitched, (type, data) =>
+        {
+            Hashtable props = new Hashtable();
+            props["GameStarted"] = true;
+            Pun2Manager.Instance.SetMyProperties(props);
         });
     }
     #endregion
