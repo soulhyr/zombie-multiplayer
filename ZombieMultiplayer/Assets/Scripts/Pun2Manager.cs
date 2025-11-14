@@ -46,6 +46,13 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
             PhotonNetwork.ConnectUsingSettings();
         }
     }
+    public Player[] PlayerList => PhotonNetwork.PlayerList;
+    public bool IsMasterClient => PhotonNetwork.IsMasterClient;
+    public string NickName { get => PhotonNetwork.NickName; set => PhotonNetwork.NickName = value; }
+    public bool AutomaticallySyncScene { get => PhotonNetwork.AutomaticallySyncScene; set => PhotonNetwork.AutomaticallySyncScene = value; }
+
+    public Room CurrentRoom => PhotonNetwork.CurrentRoom;
+    public bool IsConnectedAndReady => PhotonNetwork.IsConnectedAndReady;
 
     public void CreateRoom() => PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2 });
     public void JoinRoom(string roomName) => PhotonNetwork.JoinRoom(roomName);
@@ -54,13 +61,17 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
     public void LoadScene(string sceneName) => PhotonNetwork.LoadLevel(sceneName);
     public void SetMyProperties(Hashtable props) => PhotonNetwork.LocalPlayer.SetCustomProperties(props);
     public int GetRoomCount() => PhotonNetwork.CountOfRooms;
-    public Player[] PlayerList => PhotonNetwork.PlayerList;
-    public bool IsMasterClient => PhotonNetwork.IsMasterClient;
-    public string NickName { get => PhotonNetwork.NickName; set => PhotonNetwork.NickName = value; }
-    public bool AutomaticallySyncScene { get => PhotonNetwork.AutomaticallySyncScene; set => PhotonNetwork.AutomaticallySyncScene = value; }
+    public void LoadSceneForAll(string sceneName)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        photonView.RPC(nameof(RPC_LoadScene), RpcTarget.AllBuffered, sceneName);
+    }
 
-    public Room CurrentRoom => PhotonNetwork.CurrentRoom;
-    public bool IsConnectedAndReady => PhotonNetwork.IsConnectedAndReady;
+    [PunRPC]
+    private void RPC_LoadScene(string sceneName)
+    {
+        PhotonNetwork.LoadLevel(sceneName);
+    }
     
     public override void OnConnectedToMaster() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnConnectedToMaster);
     public override void OnDisconnected(DisconnectCause cause) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnDisconnected);

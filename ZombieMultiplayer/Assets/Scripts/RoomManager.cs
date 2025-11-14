@@ -91,9 +91,11 @@ public class RoomManager : MonoBehaviour
                 Debug.Log("발생할 수 없지만 예방한건데 걸렸으니 큰일!!");
                 return;
             }
-            Pun2Manager.Instance.AutomaticallySyncScene = true;
-            Debug.Log(Pun2Manager.Instance.AutomaticallySyncScene);
-            Pun2Manager.Instance.LoadScene("Main");
+            // Pun2Manager.Instance.AutomaticallySyncScene = true;
+            // Debug.Log(Pun2Manager.Instance.AutomaticallySyncScene);
+            // Pun2Manager.Instance.LoadScene("Main");
+            
+            Pun2Manager.Instance.LoadSceneForAll("Main");
         });
         btnReady.onClick.AddListener(() =>
         {
@@ -133,6 +135,7 @@ public class RoomManager : MonoBehaviour
         {
             SetButton(btnStart, Pun2Manager.Instance.IsMasterClient);
             SetButton(btnReady, !Pun2Manager.Instance.IsMasterClient);
+            btnStart.interactable = false;
         });
     }
     
