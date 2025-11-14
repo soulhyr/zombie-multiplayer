@@ -19,7 +19,8 @@ public class EventDispatcher
         OnLeftRoom,
         OnPlayerEnteredRoom,
         OnPlayerLeftRoom,
-        OnPlayerPropertiesUpdate
+        OnPlayerPropertiesUpdate,
+        OnMasterClientSwitched,
     }
     
     private EventDispatcher()

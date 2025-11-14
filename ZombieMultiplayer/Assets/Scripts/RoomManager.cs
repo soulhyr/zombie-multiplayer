@@ -78,14 +78,22 @@ public class RoomManager : MonoBehaviour
             Debug.Log("btnBack");
             Pun2Manager.Instance.LeaveRoom();
         });
-        btnStart.onClick.AddListener(() => Pun2Manager.Instance.LoadScene("Main"));
+        btnStart.onClick.AddListener(() =>
+        {
+            if (!Pun2Manager.Instance.IsMasterClient)
+            {
+                Debug.Log("발생할 수 없지만 예방한건데 걸렸으니 큰일!!");
+                return;
+            }
+            Pun2Manager.Instance.AutomaticallySyncScene = true;
+            Pun2Manager.Instance.LoadScene("Main");
+        });
         btnReady.onClick.AddListener(() =>
         {
             isReady = !isReady;
             Debug.Log($"btnReady, isReady: {isReady}");
             btnReady.GetComponentInChildren<TMP_Text>().text = isReady ? "UnReady" : "Ready";
             SetButton(btnStart, isReady);
-            btnStart.interactable = true;
             
             Hashtable props = new Hashtable();
             props["ready"] = isReady;
@@ -109,18 +117,16 @@ public class RoomManager : MonoBehaviour
             Debug.Log($"{data.NickName}님이 방에서 나갔습니다!");
             UpdatePlayerListUI();
         });
-        EventDispatcher.instance.AddEventHandler<Tuple<Player, Hashtable>>(EventDispatcher.EventType.OnPlayerPropertiesUpdate, (type, data) =>
+        EventDispatcher.instance.AddEventHandler<(Player, Hashtable)>(EventDispatcher.EventType.OnPlayerPropertiesUpdate, (type, data) =>
         {
-            // todo : 동작 확인 필요.
             Hashtable changedProps = data.Item2;
-            btnStart.interactable = changedProps.ContainsKey("ready") && changedProps["ready"].Equals(true);
+            SetButton(btnStart,changedProps.ContainsKey("ready") && changedProps["ready"].Equals(true));
         });
-        
-        // todo : 방장 바뀌었을때 처리.
-        // todo : 모두 레디하면 게임 이동.
-        // todo : 게임에서 닉네임 표기.
-        
-        Debug.Log("AddEvents end");
+        EventDispatcher.instance.AddEventHandler<Player>(EventDispatcher.EventType.OnMasterClientSwitched, (type, data) =>
+        {
+            SetButton(btnStart, Pun2Manager.Instance.IsMasterClient);
+            SetButton(btnReady, !Pun2Manager.Instance.IsMasterClient);
+        });
     }
     
     private void UpdatePlayerListUI(string msg = "")
@@ -167,6 +173,6 @@ public class RoomManager : MonoBehaviour
             btn.interactable = false;
         }
 
-        btn.gameObject.SetActive(true);
+        btn.gameObject.SetActive(isActive);
     }
 }

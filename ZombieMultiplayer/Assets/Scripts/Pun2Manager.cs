@@ -53,13 +53,11 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
     public void JoinLobby() => PhotonNetwork.JoinLobby();
     public void LoadScene(string sceneName) => PhotonNetwork.LoadLevel(sceneName);
     public void SetMyProperties(Hashtable props) => PhotonNetwork.LocalPlayer.SetCustomProperties(props);
-    public Player[] PlayerList => PhotonNetwork.PlayerList;
-
     public int GetRoomCount() => PhotonNetwork.CountOfRooms;
-
+    public Player[] PlayerList => PhotonNetwork.PlayerList;
     public bool IsMasterClient => PhotonNetwork.IsMasterClient;
     public string NickName { get => PhotonNetwork.NickName; set => PhotonNetwork.NickName = value; }
-
+    public bool AutomaticallySyncScene { get => PhotonNetwork.AutomaticallySyncScene; set => PhotonNetwork.AutomaticallySyncScene = value; }
 
     public override void OnConnectedToMaster() => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnConnectedToMaster);
     public override void OnDisconnected(DisconnectCause cause) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnDisconnected);
@@ -86,4 +84,5 @@ public class Pun2Manager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnPlayerEnteredRoom, newPlayer);
     public override void OnPlayerLeftRoom(Player otherPlayer) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnPlayerLeftRoom, otherPlayer);
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnPlayerPropertiesUpdate, (targetPlayer, changedProps));
+    public override void OnMasterClientSwitched(Player newMasterClient) => EventDispatcher.instance.SendEvent(EventDispatcher.EventType.OnMasterClientSwitched, newMasterClient);
 }
