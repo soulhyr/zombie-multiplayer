@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
@@ -7,9 +8,10 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    #region # Variables
     public Canvas uiCanvas;
-    public TMP_Text nicknamePrefab;
     public Button btnBack;
+    public TMP_Text nicknamePrefab;
     
     public UILoading uiLoadingPrefab;
     private UILoading loadingUI;
@@ -17,11 +19,11 @@ public class GameManager : MonoBehaviour
     private Camera mainCam;
     private readonly string characterPrefabName = "Woman";
 
-    // 캐릭터 ↔ 닉네임 UI
-    private Dictionary<GameObject, TMP_Text> nicknames = new Dictionary<GameObject, TMP_Text>();
-    // Player ↔ 캐릭터(PhotonViewOwner) 매핑
-    private Dictionary<int, GameObject> playerCharacters = new Dictionary<int, GameObject>();
-
+    private Dictionary<GameObject, TMP_Text> nicknames = new Dictionary<GameObject, TMP_Text>();    // 캐릭터 닉네임
+    private Dictionary<int, GameObject> playerCharacters = new Dictionary<int, GameObject>();       // 플레이어 캐릭터
+    #endregion
+    
+    #region # Lifecycle
     void Start()
     {
         loadingUI = Instantiate(uiLoadingPrefab);
@@ -33,6 +35,22 @@ public class GameManager : MonoBehaviour
         loadingUI.Hide();
     }
 
+    void LateUpdate()
+    {
+        foreach (var kvp in nicknames)
+        {
+            var character = kvp.Key;
+            var text = kvp.Value;
+
+            if (character == null || text == null) continue;
+
+            Vector3 worldPos = character.transform.position + Vector3.up * 2f;
+            text.transform.position = mainCam.WorldToScreenPoint(worldPos);
+        }
+    }
+    #endregion
+    
+    #region # 초기화 및 이벤트 바인딩
     private void Init()
     {
         if (uiCanvas == null)
@@ -43,44 +61,34 @@ public class GameManager : MonoBehaviour
 
         mainCam = Camera.main;
 
-        // 내 캐릭터 생성
         CreateLocalCharacter();
-
-        // 이미 방에 들어와있는 다른 플레이어들 처리
         SetupExistingPlayers();
     }
 
+    void OnDestroy() => ResetEvent();
+
+    private void ResetEvent()
+    {
+        btnBack.onClick.RemoveAllListeners();
+        
+        EventDispatcher.instance.RemoveAllEventHandlers();
+    }
+    
     private void AddEvents()
     {
-        btnBack.onClick.AddListener(() =>
-        {
-            Pun2Manager.Instance.LeaveRoom();
-        });
+        btnBack.onClick.AddListener(() => Pun2Manager.Instance.LeaveRoom());
         
-        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnLeftRoom, type =>
-        {
-            Pun2Manager.Instance.LoadScene("Lobby");
-        });
-        
-        // 새 플레이어 입장 처리
+        EventDispatcher.instance.AddEventHandler(EventDispatcher.EventType.OnLeftRoom, type => Pun2Manager.Instance.LoadScene("Lobby"));
+        EventDispatcher.instance.AddEventHandler<Player>(EventDispatcher.EventType.OnPlayerLeftRoom, (type, data) => RemovePlayer(data));
         EventDispatcher.instance.AddEventHandler<Player>(EventDispatcher.EventType.OnPlayerEnteredRoom, (type, data) =>
         {
-            if (data.ActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
-                return;
-
-            TryLinkPlayerUI(data);
-        });
-
-        // 플레이어 나가기 처리
-        EventDispatcher.instance.AddEventHandler<Player>(EventDispatcher.EventType.OnPlayerLeftRoom, (type, data) =>
-        {
-            RemovePlayer(data);
+            if (data.ActorNumber != PhotonNetwork.LocalPlayer.ActorNumber)
+                TryLinkPlayerUI(data);
         });
     }
+    #endregion
 
-
-    // --- 캐릭터 생성 & 매핑 -----------------------------------------------------------
-
+    #region # 캐릭터 생성 및 매핑.
     private void CreateLocalCharacter()
     {
         var initPos = Random.insideUnitSphere * 5f;
@@ -91,7 +99,7 @@ public class GameManager : MonoBehaviour
         var pv = go.GetComponent<PhotonView>();
         playerCharacters[pv.Owner.ActorNumber] = go;
 
-        CreateNicknameUI(go, PhotonNetwork.NickName, Color.white);
+        CreateNicknameUI(go, PhotonNetwork.NickName, Color.blue);
     }
 
     // 기존 플레이어 캐릭터 탐색
@@ -105,10 +113,7 @@ public class GameManager : MonoBehaviour
             TryLinkPlayerUI(player);
         }
     }
-
-
-    // --- 닉네임 UI 처리 -------------------------------------------------------------
-
+    
     private void TryLinkPlayerUI(Player player)
     {
         // 캐릭터가 이미 씬에서 생성된 경우 찾기
@@ -118,12 +123,11 @@ public class GameManager : MonoBehaviour
             CreateNicknameUI(character, player.NickName, Color.red);
             return;
         }
-
         // 아직 생성 안되었다면 지연 처리
         StartCoroutine(WaitForCharacterThenCreateUI(player));
     }
 
-    private System.Collections.IEnumerator WaitForCharacterThenCreateUI(Player player)
+    private IEnumerator WaitForCharacterThenCreateUI(Player player)
     {
         GameObject character = null;
 
@@ -179,20 +183,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void LateUpdate()
-    {
-        foreach (var kvp in nicknames)
-        {
-            var character = kvp.Key;
-            var text = kvp.Value;
-
-            if (character == null || text == null) continue;
-
-            Vector3 worldPos = character.transform.position + Vector3.up * 2f;
-            text.transform.position = mainCam.WorldToScreenPoint(worldPos);
-        }
-    }
-
     public void RemoveCharacter(GameObject character)
     {
         if (nicknames.TryGetValue(character, out TMP_Text text))
@@ -201,4 +191,5 @@ public class GameManager : MonoBehaviour
             nicknames.Remove(character);
         }
     }
+    #endregion
 }
